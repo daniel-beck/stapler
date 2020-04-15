@@ -94,6 +94,10 @@ public class ReallyStaticTagLibrary extends TagLibrary {
             public void run(JellyContext context, XMLOutput output) throws JellyTagException {
                 Attributes actual = (allAttributesAreConstant && !EMIT_LOCATION) ? getSaxAttributes() : buildAttributes(context);
 
+                if (listener != null) {
+                    listener.onRun(this);
+                }
+
                 try {
                     output.startElement(getNsUri(),getLocalName(),getElementName(),actual);
                     getTagBody().run(context,output);
@@ -145,4 +149,13 @@ public class ReallyStaticTagLibrary extends TagLibrary {
     public static boolean EMIT_LOCATION = false;
 
     private static final String[] SUFFIX = {"src/main/resources/","src/test/resources/"};
+
+    public interface Listener {
+        void onRun(TagScript tagScript);
+    }
+
+    /**
+     * Intended as a development tool.
+     */
+    public static Listener listener;
 }
